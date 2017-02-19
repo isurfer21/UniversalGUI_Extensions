@@ -1,0 +1,49 @@
+<!--intro{
+### Automator
+To ease the workflow, we have developed the automator tool that could
+ - **Make a copy** of *cloned repository* in your local working directory, so that your *working repository* could be separated from the *cloned repository* that is used for reference and final code commit. 
+ - **Synchronise** the *cloned repository* with your *working repository* before starting new task or at your will.
+ - **Reverse synchronise** your *working repository* with the *cloned repository* when task gets completed or at your will.
+
+#### Note:
+ - **Cloned repository** &rarr; It refers to git repository that is cloned from remote branch
+ - **Working repository** &rarr; It refers to git repository that is local *working repository* based on *cloned repository*
+}intro-->
+<div class="ui message">
+  <div class="header">Automator</div>
+  <p>Fill out the form below then click on Execute button</p>
+</div>
+<form id="formis" class="ui form">
+    <div class="field">
+        <label>Repository's name</label>
+        <div class="field">
+            <input type="text" name="repositoryname" placeholder="component-template">
+        </div>
+    </div>
+    <div class="field">
+        <label>Perform action</label>
+        <div class="ui selection dropdown">
+            <input type="hidden" name="performaction">
+            <i class="dropdown icon"></i>
+            <div class="default text">Select action</div>
+            <div class="menu">
+                <div class="item" data-value="help">Help</div>
+                <div class="item" data-value="copy">Copy</div>
+                <div class="item" data-value="sync">Synchronize</div>
+                <div class="item" data-value="rsync">Reverse Synchronize</div>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="ui button">Execute</button>
+</form>
+<script>
+    $(function () {
+        $('form#formis').submit(function (e) {
+            e.preventDefault();
+            var val = WebTerminal.getInstance().getFormFieldHashMap($(this));
+            var cmd = "automator -" + val.performaction + " " + val.repositoryname;
+            WebTerminal.getInstance().executeCommand(cmd);
+        });
+        $('form#formis .ui.dropdown').dropdown();
+    });
+</script>
