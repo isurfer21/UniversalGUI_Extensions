@@ -40,9 +40,15 @@ To ease the workflow, we have developed the automator tool that could
     $(function () {
         $('form#formis').submit(function (e) {
             e.preventDefault();
-            var val = WebTerminal.getInstance().getFormFieldHashMap($(this));
-            var cmd = "automator -" + val.performaction + " " + val.repositoryname;
-            WebTerminal.getInstance().executeCommand(cmd);
+            var wt = WebTerminal.getInstance(),
+                fp = FilePath.getInstance();
+            var val = wt.getFormFieldHashMap($(this));
+            var cmd = String("[0] -[1] [2]").autofit(
+                fp.join(wt.getExtBasePath(), "automator", ((fp.isWindows()) ? "automator.bat" : "sh automator")),
+                val.performaction,
+                val.repositoryname
+            );
+            wt.executeCommand(cmd);
         });
         $('form#formis .ui.dropdown').dropdown();
     });
