@@ -5,6 +5,9 @@ To ease the workflow, we have developed the automator tool that could
  - **Synchronise** the *cloned repository* with your *working repository* before starting new task or at your will.
  - **Reverse synchronise** your *working repository* with the *cloned repository* when task gets completed or at your will.
 
+#### Compatible with
+ - Mac OSX, Windows, Linux
+
 #### Note:
  - **Cloned repository** &rarr; It refers to git repository that is cloned from remote branch
  - **Working repository** &rarr; It refers to git repository that is local *working repository* based on *cloned repository*
@@ -39,6 +42,10 @@ To ease the workflow, we have developed the automator tool that could
 </form>
 <script>
     $(function () {
+        var Preferences;
+        $.getJSON("/extension/automator/config.json", function(d) {
+            Preferences = d;
+        });
         $('form#formis').submit(function (e) {
             e.preventDefault();
             var wt = WebTerminal.getInstance(),
@@ -46,17 +53,19 @@ To ease the workflow, we have developed the automator tool that could
             var cmd = "", 
                 val = wt.getFormFieldHashMap($(this));
             if (fp.isWindows()) {
-                cmd = String("[0] -[1] [2]").autofit(
+                cmd = String("[0] -[1] [2] [3]").autofit(
                     fp.join(wt.getExtBasePath(), "automator", "automator.bat"),
                     val.performaction,
-                    val.repositoryname
+                    fp.join(Preferences.SourcePath, val.repositoryname),
+                    fp.join(Preferences.GaragePath, val.repositoryname)
                 );
             } else {
-                cmd = String("cd [0] \n [1] -[2] [3]").autofit(
+                cmd = String("cd [0] \n [1] -[2] [3] [4]").autofit(
                     fp.join(wt.getExtBasePath(), "automator"),
                     "sh automator",
                     val.performaction,
-                    val.repositoryname
+                    fp.join(Preferences.SourcePath, val.repositoryname),
+                    fp.join(Preferences.GaragePath, val.repositoryname)
                 );
             }            
             wt.executeCommand(cmd);

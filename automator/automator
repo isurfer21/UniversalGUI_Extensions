@@ -1,25 +1,26 @@
 #!/usr/bin/env bash
 echo " Automator for MiCloud Telepo   version 0.0.4 \n Copyright (c) 2017 Abhishek Kumar (kumarab@hcl.com), HCL Tech \n"
-Source="/Users/kumarab/Documents/Workshop/Git/micloud"
-Destination="/Users/kumarab/Documents/Workshop/Telepo"
-if [[ "$1" == "" ]]; then 
+argSwitch=$1
+argSource=$2
+argGarage=$3
+if [[ "$argSwitch" == "" ]]; then 
     echo " Command missing! \n"
   else 
     cd $ROOT_DIR
 	case "$1" in
     '-copy')
         echo " Copying new repository"
-        cp -R "$Source/" "$Destination/"
+        cp -R "$argSource/" "$argGarage/"
         echo " Done! \n"
     ;;
     '-sync')
         echo " Syncing the repository"
-        rsync -av "$Source/" "$Destination/" --exclude=".*"
+        rsync -av "$argSource/" "$argGarage/" --exclude=".*"
         echo " Done! \n"
     ;;
     '-rsync')
         echo " Reverse syncing the repository"
-        rsync -av "$Destination/" "$Source/" --exclude=".*"
+        rsync -av "$argGarage/" "$argSource/" --exclude=".*"
         echo " Done! \n"
     ;;
     '-help')

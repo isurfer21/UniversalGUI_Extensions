@@ -5,63 +5,61 @@ ECHO Copyright (c) 2017 Abhishek Kumar (kumarab@hcl.com), HCL Tech
 ECHO.
 
 SET argSwitch=%1
-SET argComName=%2
-
-SET Source="D:\Users\kumarab\Documents\Workshop\Telepo\Git\%argComName%"
-SET Destination="D:\Users\kumarab\Documents\Workshop\Telepo\Workspace\%argComName%"
+SET argSource=%2
+SET argGarage=%3
 
 IF "%argSwitch%"=="-copy" (
 	ECHO Copying new repository
-	IF NOT EXIST "%Destination%" (
-		git init "%Destination%"
+	IF NOT EXIST "%argGarage%" (
+		git init "%argGarage%"
 	)
-	ROBOCOPY %Source%\ %Destination%\ /S /E /XD ".git" "node_modules"
+	ROBOCOPY %argSource%\ %argGarage%\ /S /E /XD ".git" "node_modules"
   	GOTO done
 )
 
 IF "%argSwitch%"=="-sync" (
 	ECHO Syncing the repository
-	IF NOT EXIST "%Destination%" (
-		git init "%Destination%"
+	IF NOT EXIST "%argGarage%" (
+		git init "%argGarage%"
 	)
-	ROBOCOPY %Source%\ %Destination%\ /MIR /FFT /Z /XA:H /W:5 /XD ".git" "node_modules"
+	ROBOCOPY %argSource%\ %argGarage%\ /MIR /FFT /Z /XA:H /W:5 /XD ".git" "node_modules"
   	GOTO done
 )
 
 IF "%argSwitch%"=="-rsync" (
 	ECHO Reverse syncing the repository
-	IF EXIST "%Source%" (
-		ROBOCOPY %Destination%\ %Source%\ /MIR /FFT /Z /XA:H /W:5 /XD ".git" "node_modules"
+	IF EXIST "%argSource%" (
+		ROBOCOPY %argGarage%\ %argSource%\ /MIR /FFT /Z /XA:H /W:5 /XD ".git" "node_modules"
 	)
   	GOTO done
 )
 
 IF "%argSwitch%"=="-merge" (
 	ECHO Merging the repository
-	IF NOT EXIST "%Destination%" (
-		git init "%Destination%"
+	IF NOT EXIST "%argGarage%" (
+		git init "%argGarage%"
 	)
 	IF "%3"=="-preview" (
-		ROBOCOPY %Source%\ %Destination%\ /MOVE /XC /XN /XO /XX /W:1 /R:1 /L /XD ".git" "node_modules"
+		ROBOCOPY %argSource%\ %argGarage%\ /MOVE /XC /XN /XO /XX /W:1 /R:1 /L /XD ".git" "node_modules"
 	) ELSE (
-		ROBOCOPY %Source%\ %Destination%\ /E /MOVE /XC /XN /XO /XX /W:1 /R:1 /XD ".git" "node_modules"
+		ROBOCOPY %argSource%\ %argGarage%\ /E /MOVE /XC /XN /XO /XX /W:1 /R:1 /XD ".git" "node_modules"
 	)
   	GOTO done
 )
 
 IF "%argSwitch%"=="-diffsync" (
 	ECHO Merging the repository
-	IF NOT EXIST "%Destination%" (
-		git init "%Destination%"
+	IF NOT EXIST "%argGarage%" (
+		git init "%argGarage%"
 	)
-	ROBOCOPY %Source%\ %Destination%\ /e /l /ns /njs /njh /ndl /fp /XD ".git" "node_modules"
+	ROBOCOPY %argSource%\ %argGarage%\ /e /l /ns /njs /njh /ndl /fp /XD ".git" "node_modules"
   	GOTO done
 )
 
 IF "%argSwitch%"=="-diff" (
 	ECHO Changes made in single commit
-	IF EXIST "%Destination%" (
-		CD "%Destination%"
+	IF EXIST "%argGarage%" (
+		CD "%argGarage%"
 		ECHO.
 		SET /p commitId=Enter the commit-id: 
 		ECHO.
@@ -78,8 +76,8 @@ IF "%argSwitch%"=="-diff" (
 
 IF "%argSwitch%"=="-diffs" (
 	ECHO Changes made in range of commits
-	IF EXIST "%Destination%" (
-		CD "%Destination%"
+	IF EXIST "%argGarage%" (
+		CD "%argGarage%"
 		ECHO.
 		SET /p fromCommitId=Enter the from-commit-id: 
 		ECHO.
