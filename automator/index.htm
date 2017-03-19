@@ -35,6 +35,7 @@ To ease the workflow, we have developed the automator tool that could
         </div>
     </div>
     <button type="submit" class="ui button">Execute</button>
+    <button type="reset" class="ui button">Clear</button>
 </form>
 <script>
     $(function () {
@@ -42,14 +43,29 @@ To ease the workflow, we have developed the automator tool that could
             e.preventDefault();
             var wt = WebTerminal.getInstance(),
                 fp = FilePath.getInstance();
-            var val = wt.getFormFieldHashMap($(this));
-            var cmd = String("[0] -[1] [2]").autofit(
-                fp.join(wt.getExtBasePath(), "automator", ((fp.isWindows()) ? "automator.bat" : "sh automator")),
-                val.performaction,
-                val.repositoryname
-            );
+            var cmd = "", 
+                val = wt.getFormFieldHashMap($(this));
+            if (fp.isWindows()) {
+                cmd = String("[0] -[1] [2]").autofit(
+                    fp.join(wt.getExtBasePath(), "automator", "automator.bat"),
+                    val.performaction,
+                    val.repositoryname
+                );
+            } else {
+                cmd = String("cd [0] \n [1] -[2] [3]").autofit(
+                    fp.join(wt.getExtBasePath(), "automator"),
+                    "sh automator",
+                    val.performaction,
+                    val.repositoryname
+                );
+            }            
             wt.executeCommand(cmd);
         });
         $('form#formis .ui.dropdown').dropdown();
+        $('form#formis :reset').on('click', function (e) {
+            var wt = WebTerminal.getInstance();
+            wt.resetActiveExtension();
+            $('form#formis .ui.dropdown').dropdown('restore defaults');
+        });
     });
 </script>
