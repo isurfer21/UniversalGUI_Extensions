@@ -41,12 +41,15 @@ To ease the workflow, we have developed the automator tool that could
     <button type="reset" class="ui button">Clear</button>
 </form>
 <script>
-    $(function () {
-        var Preferences;
-        $.getJSON("/extension/automator/config.json", function(d) {
-            Preferences = d;
-        });
-        $('form#formis').submit(function (e) {
+    $(function(e) {
+        var containers = {},
+            controls = {},
+            preferences;
+
+        controls.loadPreferences = function(d) {
+            preferences = d;
+        };
+        controls.submitForm = function(e) {
             e.preventDefault();
             var wt = WebTerminal.getInstance(),
                 fp = FilePath.getInstance();
@@ -56,25 +59,41 @@ To ease the workflow, we have developed the automator tool that could
                 cmd = String("[0] -[1] [2] [3]").autofit(
                     fp.join(wt.getExtBasePath(), "automator", "automator.bat"),
                     val.performaction,
-                    fp.join(Preferences.SourcePath, val.repositoryname),
-                    fp.join(Preferences.GaragePath, val.repositoryname)
+                    fp.join(preferences.SourcePath, val.repositoryname),
+                    fp.join(preferences.GaragePath, val.repositoryname)
                 );
             } else {
                 cmd = String("cd [0] \n [1] -[2] [3] [4]").autofit(
                     fp.join(wt.getExtBasePath(), "automator"),
                     "sh automator",
                     val.performaction,
-                    fp.join(Preferences.SourcePath, val.repositoryname),
-                    fp.join(Preferences.GaragePath, val.repositoryname)
+                    fp.join(preferences.SourcePath, val.repositoryname),
+                    fp.join(preferences.GaragePath, val.repositoryname)
                 );
             }            
             wt.executeCommand(cmd);
-        });
-        $('form#formis .ui.dropdown').dropdown();
-        $('form#formis :reset').on('click', function (e) {
+        };        
+        controls.resetExtension = function(e) {
             var wt = WebTerminal.getInstance();
             wt.resetActiveExtension();
-            $('form#formis .ui.dropdown').dropdown('restore defaults');
-        });
+            containers.dropdowns.dropdown('restore defaults');
+        };
+
+        var attachEvents = function() {
+            containers.formis.submit(controls.submitForm);
+            containers.resetbtn.on('click', controls.resetExtension);
+        }
+        var initialize = function() {
+            containers.formis = $('form#formis');
+            containers.dropdowns = containers.formis.find('.ui.dropdown');
+            containers.resetbtn = containers.formis.find(':reset');
+
+            containers.dropdowns.dropdown();
+            $.getJSON("/extension/automator/config.json", controls.loadPreferences);
+
+            attachEvents();
+        };
+        
+        initialize();
     });
 </script>
