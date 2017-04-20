@@ -10,17 +10,23 @@ if [[ "$argSwitch" == "" ]]; then
 	case "$1" in
     '-copy')
         echo " Copying new repository"
+        if [ ! -d "$argGarage" ]; then
+            mkdir "$argGarage"
+        fi
         cp -R "$argSource/" "$argGarage/"
         echo " Done! \n"
     ;;
     '-sync')
         echo " Syncing the repository"
-        rsync -av "$argSource/" "$argGarage/" --exclude=".*"
+        if [ ! -d "$argGarage" ]; then
+            mkdir "$argGarage"
+        fi
+        rsync -av "$argSource/" "$argGarage/" --exclude=".git" --exclude="node_modules"
         echo " Done! \n"
     ;;
     '-rsync')
         echo " Reverse syncing the repository"
-        rsync -av "$argGarage/" "$argSource/" --exclude=".*"
+        rsync -av "$argGarage/" "$argSource/" --exclude=".git" --exclude="node_modules"
         echo " Done! \n"
     ;;
     '-help')
