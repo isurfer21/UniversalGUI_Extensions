@@ -16,40 +16,68 @@ To ease the workflow, we have developed the automator tool that could
   <div class="header">Automator</div>
   <p>Fill out the form below then click on Execute button</p>
 </div>
-<form id="formis" class="ui form">
-    <div class="field">
-        <label>Repository's name</label>
-        <div class="field">
-            <input type="text" name="repositoryname" placeholder="component-template">
-        </div>
+<div class="ui fluid accordion eup">
+    <div class="title">
+        <i class="icon settings"></i>
+        User Preferences
     </div>
-    <div class="field">
-        <label>Perform action</label>
-        <div class="ui selection dropdown">
-            <input type="hidden" name="performaction">
-            <i class="dropdown icon"></i>
-            <div class="default text">Select action</div>
-            <div class="menu">
-                <div class="item" data-value="help">Help</div>
-                <div class="item" data-value="copy">Copy</div>
-                <div class="item" data-value="sync">Synchronize</div>
-                <div class="item" data-value="rsync">Reverse Synchronize</div>
+    <div class="content field">
+        <form id="eupform" class="ui form">
+            <div class="field">
+                <label>Source path</label>
+                <div class="field">
+                    <input type="text" name="sourcepath" placeholder="/Users/kumarab/Documents/Workshop/Git">
+                </div>
+            </div>
+            <div class="field">
+                <label>Garage path</label>
+                <div class="field">
+                    <input type="text" name="garagepath" placeholder="/Users/kumarab/Documents/Workshop/Garage">
+                </div>
+            </div>
+            <button type="submit" class="ui button">Save</button>
+        </form>
+    </div>
+</div>
+<form id="appform" class="ui form">
+    <div class="content field">
+        <div class="field">
+            <label>Repository's name</label>
+            <div class="field">
+                <input type="text" name="repositoryname" placeholder="component-template">
             </div>
         </div>
+        <div class="field">
+            <label>Perform action</label>
+            <div class="ui selection dropdown">
+                <input type="hidden" name="performaction">
+                <i class="dropdown icon"></i>
+                <div class="default text">Select action</div>
+                <div class="menu">
+                    <div class="item" data-value="help">Help</div>
+                    <div class="item" data-value="copy">Copy</div>
+                    <div class="item" data-value="sync">Synchronize</div>
+                    <div class="item" data-value="rsync">Reverse Synchronize</div>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="ui button">Execute</button>
+        <button type="reset" class="ui button">Clear</button>
     </div>
-    <button type="submit" class="ui button">Execute</button>
-    <button type="reset" class="ui button">Clear</button>
 </form>
 <script>
     $(function(e) {
-        var containers = {},
+        var uid = 'automator',
+            containers = {},
             controls = {},
             preferences;
 
         controls.loadPreferences = function(d) {
             preferences = d;
+            containers.eupform.find('input[name="sourcepath"]').val(preferences.SourcePath);
+            containers.eupform.find('input[name="garagepath"]').val(preferences.GaragePath);
         };
-        controls.submitForm = function(e) {
+        controls.submitAppForm = function(e) {
             e.preventDefault();
             var wt = WebTerminal.getInstance(),
                 fp = FilePath.getInstance();
@@ -73,6 +101,15 @@ To ease the workflow, we have developed the automator tool that could
             }            
             wt.executeCommand(cmd);
         };        
+        controls.submitEupForm = function(e) {
+            e.preventDefault();
+            var wt = WebTerminal.getInstance();
+            var val = wt.getFormFieldHashMap($(this));
+            var cargo = (!!cargo)? preferences : {};
+            cargo.SourcePath = val.sourcepath;
+            cargo.GaragePath = val.garagepath;
+            wt.setExtPreferences(uid, JSON.stringify(cargo), controls.loadPreferences);
+        };        
         controls.resetExtension = function(e) {
             var wt = WebTerminal.getInstance();
             wt.resetActiveExtension();
@@ -80,16 +117,26 @@ To ease the workflow, we have developed the automator tool that could
         };
 
         var attachEvents = function() {
-            containers.formis.submit(controls.submitForm);
+            containers.appform.submit(controls.submitAppForm);
             containers.resetbtn.on('click', controls.resetExtension);
+            containers.eupform.submit(controls.submitEupForm);
         }
         var initialize = function() {
-            containers.formis = $('form#formis');
-            containers.dropdowns = containers.formis.find('.ui.dropdown');
-            containers.resetbtn = containers.formis.find(':reset');
+            containers.self = $('#forme');
+
+            containers.appform = containers.self.find('form#appform');
+            containers.resetbtn = containers.appform.find(':reset');
+
+            containers.eupform = containers.self.find('form#eupform');
+
+            containers.dropdowns = containers.self.find('.ui.dropdown');
+            containers.accordions = containers.self.find('.ui.accordion');
 
             containers.dropdowns.dropdown();
-            $.getJSON("/extension/automator/config.json", controls.loadPreferences);
+            containers.accordions.accordion({selector: {trigger: '.title .icon'}});
+
+            var wt = WebTerminal.getInstance();
+            wt.getExtPreferences(uid, controls.loadPreferences);
 
             attachEvents();
         };
@@ -97,3 +144,8 @@ To ease the workflow, we have developed the automator tool that could
         initialize();
     });
 </script>
+<style>
+    .eup {
+        margin-bottom: 1em;
+    }
+</style>
