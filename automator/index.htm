@@ -135,11 +135,12 @@ To ease the workflow, we have developed the automator tool that could
         };
         controls.submitEupForm = function(e) {
             e.preventDefault();
-            var wt = WebTerminal.getInstance();
+            var wt = WebTerminal.getInstance(),
+                fp = FilePath.getInstance();
             var val = wt.getFormFieldHashMap($(this));
             var cargo = (!!preferences)? preferences : {};
-            cargo.SourcePath = val.sourcepath;
-            cargo.GaragePath = val.garagepath;
+            cargo.SourcePath = fp.fixPath(val.sourcepath);
+            cargo.GaragePath = fp.fixPath(val.garagepath);          
             wt.setExtPreferences(uid, JSON.stringify(cargo), controls.loadPreferences);
         };      
         controls.submitAnrForm = function(e) {
