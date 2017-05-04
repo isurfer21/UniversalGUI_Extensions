@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-echo " Automator for MiCloud Telepo   version 0.0.4 \n Copyright (c) 2017 Abhishek Kumar (kumarab@hcl.com), HCL Tech \n"
+echo " Automator for MiCloud Telepo   version 0.0.5 \n Copyright (c) 2017 Abhishek Kumar (kumarab@hcl.com), HCL Tech \n"
 argSwitch=$1
 argSource=$2
 argGarage=$3
@@ -13,13 +13,16 @@ if [[ "$argSwitch" == "" ]]; then
         if [ ! -d "$argGarage" ]; then
             mkdir "$argGarage"
         fi
-        cp -R "$argSource/" "$argGarage/"
+        cp -R "$argSource/" "$argGarage/"        
+        cd "$argGarage"
+        rm -r ".git"
+        git init "$argGarage"
         echo " Done! \n"
     ;;
     '-sync')
         echo " Syncing the repository"
         if [ ! -d "$argGarage" ]; then
-            mkdir "$argGarage"
+            git init "$argGarage"
         fi
         rsync -av "$argSource/" "$argGarage/" --exclude=".git" --exclude="node_modules"
         echo " Done! \n"
