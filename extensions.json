@@ -1,32 +1,38 @@
 [
-	{
-		"id": "automator",
-		"name": "Automator",
-		"link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/automator.zip"
-	},
-	{
-		"id": "comtest",
-		"name": "Comtest",
-		"link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/comtest.zip"
-	},
-	{
-		"id": "curl",
-		"name": "CUrl",
-		"link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/curl.zip"
-	},
-	{
-		"id": "chmod",
-		"name": "Chmod",
-		"link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/chmod.zip"
-	},
-	{
-		"id": "sqlite",
-		"name": "Sqlite",
-		"link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/sqlite.zip"
-	},
-	{
-		"id": "dirls",
-		"name": "Dir/Ls",
-		"link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/dirls.zip"
-	}
+  {
+    "name": "automator",
+    "title": "Automator",
+    "description": "Synchronizes the cloned directory with workspace, back & forth.",
+    "link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/automator.zip"
+  },
+  {
+    "name": "comtest",
+    "title": "ComTest",
+    "description": "Checks the importability of the archived component with node modules.",
+    "link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/comtest.zip"
+  },
+  {
+    "name": "curl",
+    "title": "CUrl",
+    "description": "Transfers data from or to a server, using supported protocols.",
+    "link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/curl.zip"
+  },
+  {
+    "name": "chmod",
+    "title": "Chmod",
+    "description": "Used to modify the ACLs associated with listed files.",
+    "link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/chmod.zip"
+  },
+  {
+    "name": "sqlite",
+    "title": "SQLite",
+    "description": "Implements a self-contained transactional SQL database engine.",
+    "link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/sqlite.zip"
+  },
+  {
+    "name": "dirls",
+    "title": "Dir/Ls",
+    "description": "Displays the contents of the current directory.",
+    "link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/dirls.zip"
+  }
 ]
