@@ -1,0 +1,32 @@
+[
+	{
+		"id": "automator",
+		"name": "Automator",
+		"link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/automator.zip"
+	},
+	{
+		"id": "comtest",
+		"name": "Comtest",
+		"link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/comtest.zip"
+	},
+	{
+		"id": "curl",
+		"name": "CUrl",
+		"link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/curl.zip"
+	},
+	{
+		"id": "chmod",
+		"name": "Chmod",
+		"link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/chmod.zip"
+	},
+	{
+		"id": "sqlite",
+		"name": "Sqlite",
+		"link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/sqlite.zip"
+	},
+	{
+		"id": "dirls",
+		"name": "Dir/Ls",
+		"link": "https://github.com/isurfer21/UniversalGUI_Extensions/archive/dirls.zip"
+	}
+]
