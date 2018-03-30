@@ -5,7 +5,7 @@ It contains all the extensions in separate branches for the desktop application,
 
 A browser based desktop app that could provide a GUI to any CLI tools that were made for either Linux, MacOS or Windows.
 
-For more information, see the [synopsis](https://docs.google.com/presentation/d/e/2PACX-1vRvBSYGm94coMkS7peJHEBdXODVQyzEih2Y9Hn92ASbZynMjJE_-y0N3Cjl-CTsgagx1dItsfqJch9L/pub?start=false&loop=false&delayms=3000)
+For more information, see the [synopsis](https://docs.google.com/presentation/d/e/2PACX-1vRvBSYGm94coMkS7peJHEBdXODVQyzEih2Y9Hn92ASbZynMjJE_-y0N3Cjl-CTsgagx1dItsfqJch9L/pub?start=false&loop=false&delayms=3000) or visit this [link](http://nistush.in/wiki/product_universalgui).
 
 #### Download
 
