@@ -111,7 +111,7 @@ To ease the workflow, we have developed the automator tool that could
         };
         controls.submitAppForm = function(e) {
             e.preventDefault();
-            var wt = WebTerminal.getInstance(),
+            var wt = UniversalGUI.getInstance(),
                 fp = FilePath.getInstance();
             var cmd = "", 
                 val = wt.getFormFieldHashMap($(this));
@@ -135,7 +135,7 @@ To ease the workflow, we have developed the automator tool that could
         };
         controls.submitEupForm = function(e) {
             e.preventDefault();
-            var wt = WebTerminal.getInstance(),
+            var wt = UniversalGUI.getInstance(),
                 fp = FilePath.getInstance();
             var val = wt.getFormFieldHashMap($(this));
             var cargo = (!!preferences)? preferences : {};
@@ -145,7 +145,7 @@ To ease the workflow, we have developed the automator tool that could
         };      
         controls.submitAnrForm = function(e) {
             e.preventDefault();
-            var wt = WebTerminal.getInstance();
+            var wt = UniversalGUI.getInstance();
             var val = wt.getFormFieldHashMap($(this));
             var cargo = (!!database)? database : {}; 
             cargo.Repositories = (!!cargo.Repositories) ? cargo.Repositories : [];
@@ -154,7 +154,7 @@ To ease the workflow, we have developed the automator tool that could
             containers.anrform[0].reset();
         };
         controls.resetExtension = function(e) {
-            var wt = WebTerminal.getInstance();
+            var wt = UniversalGUI.getInstance();
             wt.resetActiveExtension();
             containers.dropdowns.dropdown('restore defaults');
         };
@@ -180,7 +180,7 @@ To ease the workflow, we have developed the automator tool that could
             containers.dropdowns.dropdown();
             containers.accordions.accordion({selector: {trigger: '.title .icon'}});
 
-            var wt = WebTerminal.getInstance();
+            var wt = UniversalGUI.getInstance();
             wt.getExtPreferences(uid, controls.loadPreferences);
             wt.getExtData(uid, controls.loadData);
 
