@@ -1,7 +1,7 @@
 @ECHO off
 ECHO.
-ECHO Automator for MiCloud Telepo   version 0.0.5
-ECHO Copyright (c) 2017 Abhishek Kumar (kumarab@hcl.com), HCL Tech
+ECHO Automator for MiCloud Telepo   version 0.0.6
+ECHO Copyright (c) 2017-18 Abhishek Kumar (kumarab@hcl.com), HCL Tech
 ECHO.
 
 SET argSwitch=%1

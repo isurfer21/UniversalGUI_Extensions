@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-echo " Automator for MiCloud Telepo   version 0.0.5 \n Copyright (c) 2017 Abhishek Kumar (kumarab@hcl.com), HCL Tech \n"
+echo " Automator for MiCloud Telepo   version 0.0.5 \n Copyright (c) 2017-18 Abhishek Kumar (kumarab@hcl.com), HCL Tech \n"
 argSwitch=$1
 argSource=$2
 argGarage=$3
