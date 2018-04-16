@@ -8,6 +8,10 @@ SET argSwitch=%1
 SET argSource=%2
 SET argGarage=%3
 
+IF "%~1"=="" CALL :blankSwitch & GOTO end
+IF "%~2"=="" CALL :blankSource & GOTO end
+IF "%~3"=="" CALL :blankGarage & GOTO end
+
 IF "%argSwitch%"=="-copy" (
 	ECHO Copying new repository
 	IF NOT EXIST "%argGarage%" (
@@ -130,6 +134,24 @@ GOTO default
 
 :default
 	ECHO This command is not available.
+	ECHO.
+	CALL :menu
+	GOTO end
+
+:blankSwitch
+	ECHO The switch command is missing in argument.
+	ECHO.
+	CALL :menu
+	GOTO end
+
+:blankSource
+	ECHO The source directory path is missing in argument.
+	ECHO.
+	CALL :menu
+	GOTO end
+
+:blankGarage
+	ECHO The garage directory path is missing in argument.
 	ECHO.
 	CALL :menu
 	GOTO end
