@@ -13,13 +13,12 @@ To ease the workflow, we have developed the automator tool that could
  - **Working repository** &rarr; It refers to git repository that is local *working repository* based on *cloned repository*
 }intro-->
 <div class="ui message">
-  <div class="header">Automator</div>
-  <p>Fill out the form below then click on Execute button</p>
+    <div class="header">Automator</div>
+    <p>Fill out the form below then click on Execute button</p>
 </div>
 <div class="ui fluid accordion">
     <div class="title">
-        <i class="settings icon"></i>
-        Settings
+        <i class="settings icon"></i> Settings
     </div>
     <div class="content field">
         <form id="eupform" class="ui form">
@@ -39,28 +38,38 @@ To ease the workflow, we have developed the automator tool that could
         </form>
     </div>
     <div class="title">
-        <i class="dropdown icon"></i>
-        New repository
+        <i class="dropdown icon"></i> Manage repositories
+    </div>
+    <div class="content field">
+        <form id="mrpform" class="ui form">
+            <div class="field">
+                <label>Select repository path/name</label>
+                <div class="ui tiny middle aligned list"></div>
+            </div>
+            <button type="submit" class="ui button">Remove</button>
+        </form>
+    </div>
+    <div class="title">
+        <i class="dropdown icon"></i> New repository
     </div>
     <div class="content field">
         <form id="anrform" class="ui form">
             <div class="field">
-                <label>Repository's name</label>
+                <label>New repository path/name</label>
                 <div class="field">
-                    <input type="text" name="repositoryname" placeholder="component-template">
+                    <input type="text" name="repositoryname" placeholder="component-template" title="Enter the relative path of repository from Source/Garage path">
                 </div>
             </div>
-            <button type="submit" class="ui button">Add</button>
+            <button type="submit" class="ui button">Insert</button>
         </form>
     </div>
     <div class="title active">
-        <i class="dropdown icon"></i>
-        Application
+        <i class="dropdown icon"></i> Application
     </div>
     <div class="content field active">
         <form id="appform" class="ui form">
             <div class="field">
-                <label>Repository's name</label>
+                <label>Repository path/name</label>
                 <div data-for="repositoryname" class="ui selection dropdown">
                     <input type="hidden" name="repositoryname">
                     <i class="dropdown icon"></i>
@@ -88,105 +97,134 @@ To ease the workflow, we have developed the automator tool that could
     </div>
 </div>
 <script type="text/javascript">
-    $(function(e) {
-        var uid = 'automator',
-            containers = {},
-            controls = {},
-            preferences, database;
+$(function(e) {
+    var uid = 'automator',
+        containers = {},
+        controls = {},
+        preferences, database;
 
-        controls.loadPreferences = function(d) {
-            preferences = d;
-            containers.eupform.find('input[name="sourcepath"]').val(preferences.SourcePath);
-            containers.eupform.find('input[name="garagepath"]').val(preferences.GaragePath);
-        };
-        controls.loadData = function(d) {
-            database = d;
-            var temp = '<div class="item" data-value="[0]">[0]</div>',
-                ilist = (!!database.Repositories) ? database.Repositories : [],
-                olist = [];
-            for(var i=0; i<ilist.length; i++) {
-                olist.push(temp.autofit(ilist[i]));
-            }
-            containers.appform.find('[data-for="repositoryname"] .menu').html(olist.join(''));
-        };
-        controls.submitAppForm = function(e) {
-            e.preventDefault();
-            var wt = UniversalGUI.getInstance(),
-                fp = FilePath.getInstance();
-            var cmd = "", 
-                val = wt.getFormFieldHashMap($(this));
-            if (fp.isWindows()) {
-                cmd = String("[0] -[1] [2] [3]").autofit(
-                    fp.join(wt.getExtBasePath(), "automator", "automator.bat"),
-                    val.performaction,
-                    fp.join(preferences.SourcePath, val.repositoryname),
-                    fp.join(preferences.GaragePath, val.repositoryname)
-                );
-            } else {
-                cmd = String("cd [0] \n [1] -[2] [3] [4]").autofit(
-                    fp.join(wt.getExtBasePath(), "automator"),
-                    "sh automator",
-                    val.performaction,
-                    fp.join(preferences.SourcePath, val.repositoryname),
-                    fp.join(preferences.GaragePath, val.repositoryname)
-                );
-            }            
-            wt.executeCommand(cmd);
-        };
-        controls.submitEupForm = function(e) {
-            e.preventDefault();
-            var wt = UniversalGUI.getInstance(),
-                fp = FilePath.getInstance();
-            var val = wt.getFormFieldHashMap($(this));
-            var cargo = (!!preferences)? preferences : {};
-            cargo.SourcePath = fp.fixPath(val.sourcepath);
-            cargo.GaragePath = fp.fixPath(val.garagepath);          
-            wt.setExtPreferences(uid, JSON.stringify(cargo), controls.loadPreferences);
-        };      
-        controls.submitAnrForm = function(e) {
-            e.preventDefault();
-            var wt = UniversalGUI.getInstance();
-            var val = wt.getFormFieldHashMap($(this));
-            var cargo = (!!database)? database : {}; 
-            cargo.Repositories = (!!cargo.Repositories) ? cargo.Repositories : [];
-            cargo.Repositories.push(val.repositoryname);
-            wt.setExtData(uid, JSON.stringify(cargo), controls.loadData);
-            containers.anrform[0].reset();
-        };
-        controls.resetExtension = function(e) {
-            var wt = UniversalGUI.getInstance();
-            wt.resetActiveExtension();
-            containers.dropdowns.dropdown('restore defaults');
-        };
-
-        var attachEvents = function() {
-            containers.resetbtn.on('click', controls.resetExtension);
-            containers.appform.submit(controls.submitAppForm);
-            containers.eupform.submit(controls.submitEupForm);
-            containers.anrform.submit(controls.submitAnrForm);
+    controls.loadPreferences = function(d) {
+        preferences = d;
+        containers.eupform.find('input[name="sourcepath"]').val(preferences.SourcePath);
+        containers.eupform.find('input[name="garagepath"]').val(preferences.GaragePath);
+    };
+    controls.loadData = function(d) {
+        controls.loadDataInDropdown(d);
+        controls.loadDataInRepoList(d);
+    };
+    controls.loadDataInDropdown = function(d) {
+        database = d;
+        var tmpldd = '<div class="item" data-value="[0]">[0]</div>',
+            ilist = (!!database.Repositories) ? database.Repositories : [],
+            olistdd = [];
+        for (var i = 0; i < ilist.length; i++) {
+            olistdd.push(tmpldd.autofit(ilist[i]));
         }
-        var initialize = function() {
-            containers.self = $('#forme');
+        containers.appform.find('[data-for="repositoryname"] .menu').html(olistdd.join(''));
+    };
+    controls.loadDataInRepoList = function(d) {
+        database = d;
+        var tmplls = '<div class="item"><div class="ui mini checkbox content"><input type="checkbox" name="repositoryindex[]" value="[1]"><label>[0]</label></div></div>',
+            ilist = (!!database.Repositories) ? database.Repositories : [],
+            olistls = [];
+        for (var i = 0; i < ilist.length; i++) {
+            olistls.push(tmplls.autofit(ilist[i], i));
+        }
+        containers.mrplist.html(olistls.join(''));
+    };
+    controls.submitAppForm = function(e) {
+        e.preventDefault();
+        var wt = UniversalGUI.getInstance(),
+            fp = FilePath.getInstance();
+        var cmd = "",
+            val = wt.getFormFieldHashMap($(this));
+        if (fp.isWindows()) {
+            cmd = String("[0] -[1] [2] [3]").autofit(
+                fp.join(wt.getExtBasePath(), "automator", "automator.bat"),
+                val.performaction,
+                fp.join(preferences.SourcePath, val.repositoryname),
+                fp.join(preferences.GaragePath, val.repositoryname)
+            );
+        } else {
+            cmd = String("cd [0] \n [1] -[2] [3] [4]").autofit(
+                fp.join(wt.getExtBasePath(), "automator"),
+                "sh automator",
+                val.performaction,
+                fp.join(preferences.SourcePath, val.repositoryname),
+                fp.join(preferences.GaragePath, val.repositoryname)
+            );
+        }
+        wt.executeCommand(cmd);
+    };
+    controls.submitEupForm = function(e) {
+        e.preventDefault();
+        var wt = UniversalGUI.getInstance(),
+            fp = FilePath.getInstance();
+        var val = wt.getFormFieldHashMap($(this));
+        var cargo = (!!preferences) ? preferences : {};
+        cargo.SourcePath = fp.fixPath(val.sourcepath);
+        cargo.GaragePath = fp.fixPath(val.garagepath);
+        wt.setExtPreferences(uid, JSON.stringify(cargo), controls.loadPreferences);
+    };
+    controls.submitAnrForm = function(e) {
+        e.preventDefault();
+        var wt = UniversalGUI.getInstance();
+        var val = wt.getFormFieldHashMap($(this));
+        var cargo = (!!database) ? database : {};
+        cargo.Repositories = (!!cargo.Repositories) ? cargo.Repositories : [];
+        cargo.Repositories.push(val.repositoryname);
+        wt.setExtData(uid, JSON.stringify(cargo), controls.loadData);
+        containers.anrform[0].reset();
+    };
+    controls.submitMrpForm = function(e) {
+        e.preventDefault();
+        var wt = UniversalGUI.getInstance();
+        var val = wt.getFormFieldHashMap($(this));
+        var cargo = (!!database) ? database : {};
+        cargo.Repositories = (!!cargo.Repositories) ? cargo.Repositories : [];
+        for(var i=val.repositoryindex.length-1; i>=0; i--) {
+            cargo.Repositories.splice(val.repositoryindex[i], 1);
+        }
+        wt.setExtData(uid, JSON.stringify(cargo), controls.loadData);
+        containers.mrpform[0].reset();
+    };
+    controls.resetExtension = function(e) {
+        var wt = UniversalGUI.getInstance();
+        wt.resetActiveExtension();
+        containers.dropdowns.dropdown('restore defaults');
+    };
 
-            containers.appform = containers.self.find('form#appform');
-            containers.resetbtn = containers.appform.find(':reset');
+    var attachEvents = function() {
+        containers.resetbtn.on('click', controls.resetExtension);
+        containers.appform.submit(controls.submitAppForm);
+        containers.eupform.submit(controls.submitEupForm);
+        containers.anrform.submit(controls.submitAnrForm);
+        containers.mrpform.submit(controls.submitMrpForm);
+    }
+    var initialize = function() {
+        containers.self = $('#forme');
 
-            containers.eupform = containers.self.find('form#eupform');
-            containers.anrform = containers.self.find('form#anrform');
+        containers.appform = containers.self.find('form#appform');
+        containers.resetbtn = containers.appform.find(':reset');
 
-            containers.dropdowns = containers.self.find('.ui.dropdown');
-            containers.accordions = containers.self.find('.ui.accordion');
+        containers.eupform = containers.self.find('form#eupform');
+        containers.anrform = containers.self.find('form#anrform');
+        containers.mrpform = containers.self.find('form#mrpform');
 
-            containers.dropdowns.dropdown();
-            containers.accordions.accordion({selector: {trigger: '.title .icon'}});
+        containers.mrplist = containers.mrpform.find('.ui.list');
+        containers.dropdowns = containers.appform.find('.ui.dropdown');
+        containers.accordions = containers.self.find('.ui.accordion');
 
-            var wt = UniversalGUI.getInstance();
-            wt.getExtPreferences(uid, controls.loadPreferences);
-            wt.getExtData(uid, controls.loadData);
+        containers.dropdowns.dropdown();
+        containers.accordions.accordion({ selector: { trigger: '.title .icon' } });
 
-            attachEvents();
-        };
-        
-        initialize();
-    });    
+        var wt = UniversalGUI.getInstance();
+        wt.getExtPreferences(uid, controls.loadPreferences);
+        wt.getExtData(uid, controls.loadData);
+
+        attachEvents();
+    };
+
+    initialize();
+});
 </script>
