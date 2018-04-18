@@ -25,12 +25,12 @@ if [[ "$argSwitch" == "" ]]; then
         if [ ! -d "$argGarage" ]; then
             git init "$argGarage"
         fi
-        rsync -av "$argSource/" "$argGarage/" --delete --exclude=".git" --exclude="node_modules"
+        rsync -av "$argSource/" "$argGarage/" --delete $argExclude
         echo " Done! \n"
     ;;
     '-rsync')
         echo " Reverse syncing the repository"
-        rsync -av "$argGarage/" "$argSource/" --delete --exclude=".git" --exclude="node_modules"
+        rsync -av "$argGarage/" "$argSource/" --delete $argExclude
         echo " Done! \n"
     ;;
     '-help')

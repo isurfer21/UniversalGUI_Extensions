@@ -18,7 +18,7 @@ IF "%argSwitch%"=="-copy" (
 	IF NOT EXIST "%argGarage%" (
 		git init "%argGarage%"
 	)
-	ROBOCOPY %argSource%\ %argGarage%\ /S /E /XD ".git" "node_modules"
+	ROBOCOPY %argSource%\ %argGarage%\ /S /E /XD %argExclude%
   	GOTO done
 )
 
@@ -27,14 +27,14 @@ IF "%argSwitch%"=="-sync" (
 	IF NOT EXIST "%argGarage%" (
 		git init "%argGarage%"
 	)
-	ROBOCOPY %argSource%\ %argGarage%\ /MIR /FFT /Z /XA:H /W:5 /XD ".git" "node_modules"
+	ROBOCOPY %argSource%\ %argGarage%\ /MIR /FFT /Z /XA:H /W:5 /XD %argExclude%
   	GOTO done
 )
 
 IF "%argSwitch%"=="-rsync" (
 	ECHO Reverse syncing the repository
 	IF EXIST "%argSource%" (
-		ROBOCOPY %argGarage%\ %argSource%\ /MIR /FFT /Z /XA:H /W:5 /XD ".git" "node_modules"
+		ROBOCOPY %argGarage%\ %argSource%\ /MIR /FFT /Z /XA:H /W:5 /XD %argExclude%
 	)
   	GOTO done
 )

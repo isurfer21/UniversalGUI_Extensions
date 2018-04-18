@@ -1,1 +1,1 @@
-{"Repositories":["hello-world"],"Exclusions":["node_modules",".git"]}
+{"Repositories":["hello-world"],"Exclusions":["node_modules",".git","dist",".DS_Store"]}

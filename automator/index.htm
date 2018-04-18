@@ -158,19 +158,21 @@ $(function(e) {
         var cmd = "",
             val = wt.getFormFieldHashMap($(this));
         if (fp.isWindows()) {
-            cmd = String("[0] -[1] [2] [3]").autofit(
+            cmd = String("[0] -[1] [2] [3] \"[4]\"").autofit(
                 fp.join(wt.getExtBasePath(), "automator", "automator.bat"),
                 val.performaction,
                 fp.join(preferences.SourcePath, val.repositoryname),
-                fp.join(preferences.GaragePath, val.repositoryname)
+                fp.join(preferences.GaragePath, val.repositoryname),
+                getExclusionsAsString(' ')
             );
         } else {
-            cmd = String("cd [0] \n [1] -[2] [3] [4]").autofit(
+            cmd = String("cd [0] \n [1] -[2] [3] [4] \"[5]\"").autofit(
                 fp.join(wt.getExtBasePath(), "automator"),
                 "sh automator",
                 val.performaction,
                 fp.join(preferences.SourcePath, val.repositoryname),
-                fp.join(preferences.GaragePath, val.repositoryname)
+                fp.join(preferences.GaragePath, val.repositoryname),
+                getExclusionsAsString('\ ', '--exclude=')
             );
         }
         wt.executeCommand(cmd);
@@ -229,7 +231,18 @@ $(function(e) {
         wt.resetActiveExtension();
         containers.dropdowns.dropdown('restore defaults');
     };
-
+    
+    var getExclusionsAsString = function(delimiter, prefix) {
+        var output = '',
+            list = [];
+        if (!!database.Exclusions) {
+            for (var i=0; i<database.Exclusions.length; i++) {
+                list.push(((!!prefix) ? prefix : '') + '"' + database.Exclusions[i] + '"');
+            }
+            output = list.join(delimiter);
+        }
+        return output;
+    };
     var attachEvents = function() {
         containers.resetbtn.on('click', controls.resetExtension);
         containers.appform.submit(controls.executeAppCmd);
