@@ -70,24 +70,13 @@ To ease the workflow, we have developed the automator tool that could
         </form>
     </div>
     <div class="title">
-        <i class="dropdown icon"></i> Manage repositories
+        <i class="dropdown icon"></i> Repositories
     </div>
     <div class="content field">
-        <form id="managerepoform" class="ui form">
+        <form id="repositoryform" class="ui form">
             <div class="field">
-                <label>Select repository path/name</label>
-                <div class="ui tiny middle aligned list"></div>
-            </div>
-            <button type="submit" class="ui button">Remove</button>
-        </form>
-    </div>
-    <div class="title">
-        <i class="dropdown icon"></i> New repository
-    </div>
-    <div class="content field">
-        <form id="newrepoform" class="ui form">
-            <div class="field">
-                <label>New repository path/name</label>
+                <label>Repository path/name</label>
+                <div class="ui labels"></div>
                 <input type="text" name="repositoryname" placeholder="e.g., component-template" title="Enter the relative path of repository from Source/Garage path">
             </div>
             <button type="submit" class="ui button">Insert</button>
@@ -100,7 +89,7 @@ To ease the workflow, we have developed the automator tool that could
         <form id="exclusionform" class="ui form">
             <div class="field">
                 <label>Exclude files/folders</label>
-                <div class="ui blue labels"></div>
+                <div class="ui labels"></div>
                 <input type="text" name="excludename" placeholder="e.g., node_modules" title="List down each file/folder separated by Enter to exclude from action">
             </div>
             <button type="submit" class="ui button">Exclude</button>
@@ -122,7 +111,7 @@ $(function(e) {
     controls.loadData = function(d) {
         database = d;
         controls.loadDataInDropdown(d);
-        controls.loadDataInRepoList(d);
+        controls.loadDataInRepositories(d);
         controls.loadDataInExclusions(d);
     };
     controls.loadDataInDropdown = function() {
@@ -134,14 +123,19 @@ $(function(e) {
         }
         containers.appform.find('[data-for="repositoryname"] .menu').html(olistdd.join(''));
     };
-    controls.loadDataInRepoList = function() {
-        var tmplls = '<div class="item"><div class="ui mini checkbox content"><input type="checkbox" name="repositoryindex[]" value="[1]"><label>[0]</label></div></div>',
+    controls.loadDataInRepositories = function() {
+        var tmplls = '<a class="ui label">[0]<i class="icon delete" data-index="[1]"></i></a>',
             ilist = (!!database.Repositories) ? database.Repositories : [],
             olistls = [];
         for (var i = 0; i < ilist.length; i++) {
             olistls.push(tmplls.autofit(ilist[i], i));
         }
-        containers.managerepolist.html(olistls.join(''));
+        if (!!containers.repositoryitems) {
+            containers.repositoryitems.off('click', controls.removeRepository);
+        }
+        containers.repositorylist.html(olistls.join(''));
+        containers.repositoryitems = containers.repositorylist.find('a.ui.label > i.icon.delete');
+        containers.repositoryitems.on('click', controls.removeRepository);
     };
     controls.loadDataInExclusions = function() {
         var tmpllb = '<a class="ui label">[0]<i class="icon delete" data-index="[1]"></i></a>',
@@ -191,7 +185,7 @@ $(function(e) {
         cargo.GaragePath = fp.fixPath(val.garagepath);
         wt.setExtPreferences(uid, JSON.stringify(cargo), controls.loadPreferences);
     };
-    controls.insertNewRepo = function(e) {
+    controls.insertRepository = function(e) {
         e.preventDefault();
         var wt = UniversalGUI.getInstance();
         var val = wt.getFormFieldHashMap($(this));
@@ -199,19 +193,17 @@ $(function(e) {
         cargo.Repositories = (!!cargo.Repositories) ? cargo.Repositories : [];
         cargo.Repositories.push(val.repositoryname);
         wt.setExtData(uid, JSON.stringify(cargo), controls.loadData);
-        containers.newrepoform[0].reset();
+        containers.repositoryform[0].reset();
     };
-    controls.removeExistingRepo = function(e) {
+    controls.removeRepository = function(e) {
         e.preventDefault();
         var wt = UniversalGUI.getInstance();
-        var val = wt.getFormFieldHashMap($(this));
+        var repositoryindex = $(e.target).data('index');
         var cargo = (!!database) ? database : {};
         cargo.Repositories = (!!cargo.Repositories) ? cargo.Repositories : [];
-        for(var i=val.repositoryindex.length-1; i>=0; i--) {
-            cargo.Repositories.splice(val.repositoryindex[i], 1);
-        }
+        cargo.Repositories.splice(repositoryindex, 1);
         wt.setExtData(uid, JSON.stringify(cargo), controls.loadData);
-        containers.managerepoform[0].reset();
+        containers.repositoryform[0].reset();
     };
     controls.insertExclusion = function(e) {
         e.preventDefault();
@@ -242,8 +234,7 @@ $(function(e) {
         containers.resetbtn.on('click', controls.resetExtension);
         containers.appform.submit(controls.executeAppCmd);
         containers.settingform.submit(controls.saveSettings);
-        containers.newrepoform.submit(controls.insertNewRepo);
-        containers.managerepoform.submit(controls.removeExistingRepo);
+        containers.repositoryform.submit(controls.insertRepository);
         containers.exclusionform.submit(controls.insertExclusion);
     }
     var initialize = function() {
@@ -256,10 +247,9 @@ $(function(e) {
         containers.dropdowns = containers.appform.find('.ui.dropdown');
         
         containers.settingform = containers.self.find('form#settingform');
-        containers.newrepoform = containers.self.find('form#newrepoform');
-        
-        containers.managerepoform = containers.self.find('form#managerepoform');
-        containers.managerepolist = containers.managerepoform.find('.ui.list');
+
+        containers.repositoryform = containers.self.find('form#repositoryform');
+        containers.repositorylist = containers.repositoryform.find('.ui.labels');
         
         containers.exclusionform = containers.self.find('form#exclusionform');
         containers.exclusionlist = containers.exclusionform.find('.ui.labels');
