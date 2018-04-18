@@ -3,6 +3,7 @@ echo " Automator for MiCloud Telepo   version 0.0.5 \n Copyright (c) 2017-18 Abh
 argSwitch=$1
 argSource=$2
 argGarage=$3
+argExclude=$4
 if [[ "$argSwitch" == "" ]]; then 
     echo " Command missing! \n"
   else 

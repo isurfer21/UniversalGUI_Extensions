@@ -21,7 +21,7 @@ To ease the workflow, we have developed the automator tool that could
         <i class="settings icon"></i> Settings
     </div>
     <div class="content field">
-        <form id="eupform" class="ui form">
+        <form id="settingform" class="ui form">
             <div class="field">
                 <label>Source path</label>
                 <div class="field">
@@ -35,32 +35,6 @@ To ease the workflow, we have developed the automator tool that could
                 </div>
             </div>
             <button type="submit" class="ui button">Save</button>
-        </form>
-    </div>
-    <div class="title">
-        <i class="dropdown icon"></i> Manage repositories
-    </div>
-    <div class="content field">
-        <form id="mrpform" class="ui form">
-            <div class="field">
-                <label>Select repository path/name</label>
-                <div class="ui tiny middle aligned list"></div>
-            </div>
-            <button type="submit" class="ui button">Remove</button>
-        </form>
-    </div>
-    <div class="title">
-        <i class="dropdown icon"></i> New repository
-    </div>
-    <div class="content field">
-        <form id="anrform" class="ui form">
-            <div class="field">
-                <label>New repository path/name</label>
-                <div class="field">
-                    <input type="text" name="repositoryname" placeholder="component-template" title="Enter the relative path of repository from Source/Garage path">
-                </div>
-            </div>
-            <button type="submit" class="ui button">Insert</button>
         </form>
     </div>
     <div class="title active">
@@ -95,6 +69,43 @@ To ease the workflow, we have developed the automator tool that could
             <button type="reset" class="ui button">Clear</button>
         </form>
     </div>
+    <div class="title">
+        <i class="dropdown icon"></i> Manage repositories
+    </div>
+    <div class="content field">
+        <form id="managerepoform" class="ui form">
+            <div class="field">
+                <label>Select repository path/name</label>
+                <div class="ui tiny middle aligned list"></div>
+            </div>
+            <button type="submit" class="ui button">Remove</button>
+        </form>
+    </div>
+    <div class="title">
+        <i class="dropdown icon"></i> New repository
+    </div>
+    <div class="content field">
+        <form id="newrepoform" class="ui form">
+            <div class="field">
+                <label>New repository path/name</label>
+                <input type="text" name="repositoryname" placeholder="e.g., component-template" title="Enter the relative path of repository from Source/Garage path">
+            </div>
+            <button type="submit" class="ui button">Insert</button>
+        </form>
+    </div>
+    <div class="title">
+        <i class="dropdown icon"></i> Exclusions
+    </div>
+    <div class="content field">
+        <form id="exclusionform" class="ui form">
+            <div class="field">
+                <label>Exclude files/folders</label>
+                <div class="ui blue labels"></div>
+                <input type="text" name="excludename" placeholder="e.g., node_modules" title="List down each file/folder separated by Enter to exclude from action">
+            </div>
+            <button type="submit" class="ui button">Exclude</button>
+        </form>
+    </div>
 </div>
 <script type="text/javascript">
 $(function(e) {
@@ -105,15 +116,16 @@ $(function(e) {
 
     controls.loadPreferences = function(d) {
         preferences = d;
-        containers.eupform.find('input[name="sourcepath"]').val(preferences.SourcePath);
-        containers.eupform.find('input[name="garagepath"]').val(preferences.GaragePath);
+        containers.settingform.find('input[name="sourcepath"]').val(preferences.SourcePath);
+        containers.settingform.find('input[name="garagepath"]').val(preferences.GaragePath);
     };
     controls.loadData = function(d) {
+        database = d;
         controls.loadDataInDropdown(d);
         controls.loadDataInRepoList(d);
+        controls.loadDataInExclusions(d);
     };
-    controls.loadDataInDropdown = function(d) {
-        database = d;
+    controls.loadDataInDropdown = function() {
         var tmpldd = '<div class="item" data-value="[0]">[0]</div>',
             ilist = (!!database.Repositories) ? database.Repositories : [],
             olistdd = [];
@@ -122,17 +134,30 @@ $(function(e) {
         }
         containers.appform.find('[data-for="repositoryname"] .menu').html(olistdd.join(''));
     };
-    controls.loadDataInRepoList = function(d) {
-        database = d;
+    controls.loadDataInRepoList = function() {
         var tmplls = '<div class="item"><div class="ui mini checkbox content"><input type="checkbox" name="repositoryindex[]" value="[1]"><label>[0]</label></div></div>',
             ilist = (!!database.Repositories) ? database.Repositories : [],
             olistls = [];
         for (var i = 0; i < ilist.length; i++) {
             olistls.push(tmplls.autofit(ilist[i], i));
         }
-        containers.mrplist.html(olistls.join(''));
+        containers.managerepolist.html(olistls.join(''));
     };
-    controls.submitAppForm = function(e) {
+    controls.loadDataInExclusions = function() {
+        var tmpllb = '<a class="ui label">[0]<i class="icon delete" data-index="[1]"></i></a>',
+            ilist = (!!database.Exclusions) ? database.Exclusions : [],
+            olistlb = [];
+        for (var i = 0; i < ilist.length; i++) {
+            olistlb.push(tmpllb.autofit(ilist[i], i));
+        }
+        if (!!containers.exclusionitems) {
+            containers.exclusionitems.off('click', controls.removeExclusion);
+        }
+        containers.exclusionlist.html(olistlb.join(''));
+        containers.exclusionitems = containers.exclusionlist.find('a.ui.label > i.icon.delete');
+        containers.exclusionitems.on('click', controls.removeExclusion);
+    };
+    controls.executeAppCmd = function(e) {
         e.preventDefault();
         var wt = UniversalGUI.getInstance(),
             fp = FilePath.getInstance();
@@ -156,7 +181,7 @@ $(function(e) {
         }
         wt.executeCommand(cmd);
     };
-    controls.submitEupForm = function(e) {
+    controls.saveSettings = function(e) {
         e.preventDefault();
         var wt = UniversalGUI.getInstance(),
             fp = FilePath.getInstance();
@@ -166,7 +191,7 @@ $(function(e) {
         cargo.GaragePath = fp.fixPath(val.garagepath);
         wt.setExtPreferences(uid, JSON.stringify(cargo), controls.loadPreferences);
     };
-    controls.submitAnrForm = function(e) {
+    controls.insertNewRepo = function(e) {
         e.preventDefault();
         var wt = UniversalGUI.getInstance();
         var val = wt.getFormFieldHashMap($(this));
@@ -174,9 +199,9 @@ $(function(e) {
         cargo.Repositories = (!!cargo.Repositories) ? cargo.Repositories : [];
         cargo.Repositories.push(val.repositoryname);
         wt.setExtData(uid, JSON.stringify(cargo), controls.loadData);
-        containers.anrform[0].reset();
+        containers.newrepoform[0].reset();
     };
-    controls.submitMrpForm = function(e) {
+    controls.removeExistingRepo = function(e) {
         e.preventDefault();
         var wt = UniversalGUI.getInstance();
         var val = wt.getFormFieldHashMap($(this));
@@ -186,7 +211,26 @@ $(function(e) {
             cargo.Repositories.splice(val.repositoryindex[i], 1);
         }
         wt.setExtData(uid, JSON.stringify(cargo), controls.loadData);
-        containers.mrpform[0].reset();
+        containers.managerepoform[0].reset();
+    };
+    controls.insertExclusion = function(e) {
+        e.preventDefault();
+        var wt = UniversalGUI.getInstance();
+        var val = wt.getFormFieldHashMap($(this));
+        var cargo = (!!database) ? database : {};
+        cargo.Exclusions = (!!cargo.Exclusions) ? cargo.Exclusions : [];
+        cargo.Exclusions.push(val.excludename);
+        wt.setExtData(uid, JSON.stringify(cargo), controls.loadData);
+        containers.exclusionform[0].reset();
+    };    
+    controls.removeExclusion = function(e) {
+        e.preventDefault();
+        var wt = UniversalGUI.getInstance();
+        var excludeindex = $(e.target).data('index');
+        var cargo = (!!database) ? database : {};
+        cargo.Exclusions = (!!cargo.Exclusions) ? cargo.Exclusions : [];
+        cargo.Exclusions.splice(excludeindex, 1);
+        wt.setExtData(uid, JSON.stringify(cargo), controls.loadData);
     };
     controls.resetExtension = function(e) {
         var wt = UniversalGUI.getInstance();
@@ -196,25 +240,30 @@ $(function(e) {
 
     var attachEvents = function() {
         containers.resetbtn.on('click', controls.resetExtension);
-        containers.appform.submit(controls.submitAppForm);
-        containers.eupform.submit(controls.submitEupForm);
-        containers.anrform.submit(controls.submitAnrForm);
-        containers.mrpform.submit(controls.submitMrpForm);
+        containers.appform.submit(controls.executeAppCmd);
+        containers.settingform.submit(controls.saveSettings);
+        containers.newrepoform.submit(controls.insertNewRepo);
+        containers.managerepoform.submit(controls.removeExistingRepo);
+        containers.exclusionform.submit(controls.insertExclusion);
     }
     var initialize = function() {
         containers.self = $('#forme');
 
-        containers.appform = containers.self.find('form#appform');
-        containers.resetbtn = containers.appform.find(':reset');
-
-        containers.eupform = containers.self.find('form#eupform');
-        containers.anrform = containers.self.find('form#anrform');
-        containers.mrpform = containers.self.find('form#mrpform');
-
-        containers.mrplist = containers.mrpform.find('.ui.list');
-        containers.dropdowns = containers.appform.find('.ui.dropdown');
         containers.accordions = containers.self.find('.ui.accordion');
 
+        containers.appform = containers.self.find('form#appform');
+        containers.resetbtn = containers.appform.find(':reset');
+        containers.dropdowns = containers.appform.find('.ui.dropdown');
+        
+        containers.settingform = containers.self.find('form#settingform');
+        containers.newrepoform = containers.self.find('form#newrepoform');
+        
+        containers.managerepoform = containers.self.find('form#managerepoform');
+        containers.managerepolist = containers.managerepoform.find('.ui.list');
+        
+        containers.exclusionform = containers.self.find('form#exclusionform');
+        containers.exclusionlist = containers.exclusionform.find('.ui.labels');
+        
         containers.dropdowns.dropdown();
         containers.accordions.accordion({ selector: { trigger: '.title .icon' } });
 

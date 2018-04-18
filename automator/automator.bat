@@ -7,6 +7,7 @@ ECHO.
 SET argSwitch=%1
 SET argSource=%2
 SET argGarage=%3
+SET argExclude=%4
 
 IF "%~1"=="" CALL :blankSwitch & GOTO end
 IF "%~2"=="" CALL :blankSource & GOTO end
